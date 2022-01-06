@@ -1,8 +1,12 @@
 package com.work.demo.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.work.demo.model.Category;
@@ -15,19 +19,33 @@ public class CategoryService {
 	@Autowired
 	private CategoryRepository categoryRepo;
 	
-	public String create(Category category) {
-		Category newcategory = categoryRepo.save(category);
-		return newcategory.toString();
+	public Category create(Category category) {
+		return categoryRepo.save(category);
 	}
 	
 	
-	public String getCategory(Integer categoryId) {
+	public Category getCategory(Integer categoryId) {
 		Optional<Category> findById = categoryRepo.findById(categoryId);
 		if(findById.isPresent()) {
-		  Category category = findById.get();
-		  return category.toString();
+			return findById.get();
 		}
-		return "product list not found for this category id :"+categoryId;
+		return null;
+	}
+	
+	public List<Category> findAll(int page, int limit) {
+		if(page > 0) page = page-1;
+		
+		Pageable pageableRequest= PageRequest.of(page, limit);
+		
+		Page<Category> categoryPage = categoryRepo.findAll(pageableRequest);
+		
+		List<Category> categories = categoryPage.getContent();
+		
+		if(categories!=null && !categories.isEmpty()) {
+		  return categories;
+		}
+		return categories;
+
 	}
 	
 	public String delete(Integer categoryId) {
@@ -40,13 +58,12 @@ public class CategoryService {
 		return "product is deleted for :" + categoryId;
 	}
 	
-	public String update(Category category) {
+	public Category update(Category category) {
 		Optional<Category> findById = categoryRepo.findById(category.getCategoryId());
 		if (findById.isPresent()) {
-			categoryRepo.save(category);
-			return " record is updated";
+			return  categoryRepo.save(category);
 		} else {
-			return "record not exist for this id :" + category.getCategoryId() + " which you want to update !";
+			return null;
 		}
 
 	}

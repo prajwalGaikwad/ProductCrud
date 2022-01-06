@@ -1,8 +1,12 @@
 package com.work.demo.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.work.demo.model.Product;
@@ -14,18 +18,34 @@ public class ProductService {
 	@Autowired
 	private ProductRepository pr;
 
-	public String saveProduct(Product p) {
+	public Product saveProduct(Product p) {
 		Product product = pr.save(p);
-		return product.toString();
+		return product;
 	}
 
-	public String findProductById(Integer productId) {
+	public Product  findProductById(Integer productId) {
 		Optional<Product> findById = pr.findById(productId);
 
 		if (findById.isPresent()) {
-			return findById.get().toString();
+			return findById.get() ;
 		}
-		return "Product not found ! for id:" + productId;
+		return null;
+
+	}
+	
+	public List<Product> findAll(int page, int limit) {
+		if(page > 0) page = page-1;
+		
+		Pageable pageableRequest= PageRequest.of(page, limit);
+		
+		Page<Product> productPage = pr.findAll(pageableRequest);
+		
+		List<Product> products = productPage.getContent();
+		
+		if(products!=null && !products.isEmpty()) {
+		  return products;
+		}
+		return products;
 
 	}
 
@@ -39,13 +59,14 @@ public class ProductService {
 		return "product is deleted for :" + productId;
 	}
 
-	public String updateRecord(Product product) {
+	public Product updateRecord(Product product) {
+		Product returnObj = new Product();
 		Optional<Product> findById = pr.findById(product.getProductId());
 		if (findById.isPresent()) {
-			pr.save(product);
-			return " record is updated";
+			returnObj=pr.save(product);
+			return returnObj;
 		} else {
-			return "record not exist for this id :" + product.getProductId() + " which you want to update !";
+			return returnObj;
 		}
 
 	}

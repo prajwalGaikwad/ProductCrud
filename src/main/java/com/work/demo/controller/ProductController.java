@@ -1,5 +1,7 @@
 package com.work.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,17 +28,21 @@ public class ProductController {
 	 
 	 
 	 @PostMapping("/create")
-	 public String createProduct(@RequestBody Product product) {
-		 String response= ps.saveProduct(product);
-		 return response;
+	 public Product createProduct(@RequestBody Product product) {
+		 return ps.saveProduct(product);
 	 }
 	 
 	 @GetMapping("/find")
-	 public String findProduct(@RequestParam Integer productId) {
+	 public Product findProduct(@RequestParam Integer productId) {
 		 return ps.findProductById(productId);
 	 }
 	 
-	 
+	 @GetMapping("/findAllProducts")
+	 public List<Product> findAllProduct(@RequestParam(value="page",defaultValue= "0") int page,
+			 								@RequestParam(value="limit",defaultValue= "10") int limit) {
+		 return ps.findAll(page, limit);
+	 }
+	 	 
 	 @GetMapping("/delete")
 	 public String deleteProductById(@RequestParam Integer productId) {
 		 String deleteProductRecord = ps.deleteProductRecord(productId);
@@ -44,21 +50,25 @@ public class ProductController {
 	 }
 	 
 	 @PostMapping("/update")
-	 public String updateProduct(@RequestBody Product product) {
-		 String response= ps.updateRecord(product);
-		 return response;
+	 public Product updateProduct(@RequestBody Product product) {
+		 return ps.updateRecord(product);
 	 }
 	 
 	 
 	 @PostMapping("/create-category")
-	 public String createCategory(@RequestBody Category category) {
-		 System.out.println(category);
+	 public Category createCategory(@RequestBody Category category) {
 		 return cs.create(category);
 	 }
 	
 	 @GetMapping("/findcategoryId")
-	 public String findcategory(@RequestParam Integer categoryId) {
+	 public Category findcategory(@RequestParam Integer categoryId) {
 		 return cs.getCategory(categoryId);
+	 }
+	 
+	 @GetMapping("/findAllCategories")
+	 public List<Category> findAllCategory(@RequestParam(value="page",defaultValue= "0") int page,
+			 								@RequestParam(value="limit",defaultValue= "10") int limit) {
+		 return cs.findAll(page, limit);
 	 }
 	 
 	 
@@ -69,9 +79,9 @@ public class ProductController {
 	 }
 	 
 	 @PostMapping("/updateCategory")
-	 public String updateCategory(@RequestBody Category category) {
-		 String response= cs.update(category);
-		 return response;
+	 public Category updateCategory(@RequestBody Category category) {
+		 return cs.update(category);
 	 }
+	 
 }
 
